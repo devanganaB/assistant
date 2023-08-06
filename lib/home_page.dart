@@ -1,3 +1,4 @@
+import 'package:assistant/feature_box.dart';
 import 'package:assistant/pallete.dart';
 import 'package:flutter/material.dart';
 
@@ -59,6 +60,26 @@ class _HomePageState extends State<HomePage> {
                 color: Pallete.mainFontColor,
                 fontSize: 16),
           ),
+        ),
+
+        //SUGGESTION LIST
+        const Column(
+          children: [
+            //CHATGPT
+            FeatureBox(
+              color: Pallete.firstSuggestionBoxColor,
+              headerText: 'ChatGPT',
+              description:
+                  'A smarter way to stay organized and informed with ChatGPT',
+            ),
+            //DALLE
+            FeatureBox(
+              color: Pallete.secondSuggestionBoxColor,
+              headerText: 'Dall-E',
+              description:
+                  'Get inspired and stay creative with your personal assistant powered by Dall-E',
+            ),
+          ],
         )
       ]),
     );

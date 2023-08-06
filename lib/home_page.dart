@@ -79,9 +79,22 @@ class _HomePageState extends State<HomePage> {
               description:
                   'Get inspired and stay creative with your personal assistant powered by Dall-E',
             ),
+            //SMART VOIVE ASSISTANT
+            FeatureBox(
+              color: Pallete.thirdSuggestionBoxColor,
+              headerText: 'Smart Voice Assistant',
+              description:
+                  'Get the best of both worlds with a voice assistant powered by Dall-E and ChatGPT',
+            ),
           ],
         )
       ]),
+
+      //MIC BUTTON
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.mic),
+      ),
     );
   }
 }

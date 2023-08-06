@@ -139,7 +139,15 @@ class _HomePageState extends State<HomePage> {
 
       //MIC BUTTON
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          if (await speechToText.hasPermission && speechToText.isNotListening) {
+            await startListening();
+          } else if (speechToText.isListening) {
+            await stopListening();
+          } else {
+            initSpeechToText();
+          }
+        },
         child: Icon(Icons.mic),
       ),
     );

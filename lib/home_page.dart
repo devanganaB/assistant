@@ -1,8 +1,11 @@
 import 'package:assistant/feature_box.dart';
+import 'package:assistant/openai_service.dart';
 import 'package:assistant/pallete.dart';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:animate_do/animate_do.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,19 +16,26 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final speechToText = SpeechToText();
+  final flutterTts = FlutterTts();
   String lastWords = '';
+  OpenAIService openAIService = OpenAIService();
+  String? generatedContent;
+  String? generatedImageUrl;
+  int start = 200;
+  int delay = 200;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initSpeechToText();
+    initTextToSpeech();
   }
 
-  // Future<void> initTextToSpeech() async {
-  //   await flutterTts.setSharedInstance(true);
-  //   setState(() {});
-  // }
+  Future<void> initTextToSpeech() async {
+    // await FlutterTts.setSharedInstance(true);
+    setState(() {});
+  }
 
   Future<void> initSpeechToText() async {
     await speechToText.initialize();
@@ -48,11 +58,15 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> systemSpeak(String content) async {
+    await flutterTts.speak(content);
+  }
+
   @override
   void dispose() {
     super.dispose();
     speechToText.stop();
-    // flutterTts.stop();
+    flutterTts.stop();
   }
 
   @override
@@ -74,21 +88,26 @@ class _HomePageState extends State<HomePage> {
                     image: AssetImage('assets/images/assistant.png'))),
           ),
           //chat bubbles
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            margin: EdgeInsets.symmetric(horizontal: 40).copyWith(top: 30),
-            decoration: BoxDecoration(
-                border: Border.all(color: Pallete.borderColor),
-                borderRadius:
-                    BorderRadius.circular(20).copyWith(topLeft: Radius.zero)),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                'Good Morning, what task can i do for you?',
-                style: TextStyle(
-                    color: Pallete.mainFontColor,
-                    fontSize: 22,
-                    fontFamily: 'Cera Pro'),
+          FadeInRight(
+            child: Visibility(
+              visible: generatedImageUrl == null,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                margin: EdgeInsets.symmetric(horizontal: 40).copyWith(top: 30),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Pallete.borderColor),
+                    borderRadius: BorderRadius.circular(20)
+                        .copyWith(topLeft: Radius.zero)),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'Good Morning, what task can i do for you?',
+                    style: TextStyle(
+                        color: Pallete.mainFontColor,
+                        fontSize: 22,
+                        fontFamily: 'Cera Pro'),
+                  ),
+                ),
               ),
             ),
           ),
@@ -138,17 +157,34 @@ class _HomePageState extends State<HomePage> {
       ),
 
       //MIC BUTTON
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (await speechToText.hasPermission && speechToText.isNotListening) {
-            await startListening();
-          } else if (speechToText.isListening) {
-            await stopListening();
-          } else {
-            initSpeechToText();
-          }
-        },
-        child: Icon(Icons.mic),
+      floatingActionButton: ZoomIn(
+        delay: Duration(milliseconds: start + 3 * delay),
+        child: FloatingActionButton(
+          onPressed: () async {
+            if (await speechToText.hasPermission &&
+                speechToText.isNotListening) {
+              await startListening();
+            } else if (speechToText.isListening) {
+              final speech = await OpenAIService.isArtPromptAPI(lastWords);
+              if (speech.contains('https')) {
+                generatedImageUrl = speech;
+                generatedContent = null;
+                setState(() {});
+              } else {
+                generatedImageUrl = null;
+                generatedContent = speech;
+                setState(() {});
+                await systemSpeak(speech);
+              }
+              await stopListening();
+            } else {
+              initSpeechToText();
+            }
+          },
+          child: Icon(
+            speechToText.isListening ? Icons.stop : Icons.mic,
+          ),
+        ),
       ),
     );
   }

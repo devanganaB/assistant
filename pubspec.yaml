@@ -30,6 +30,9 @@ environment:
 dependencies:
   speech_to_text: ^6.3.0
   http: ^1.1.0
+  flutter_tts: ^3.7.0
+  animate_do: ^3.0.2
+  
   flutter:
     sdk: flutter
 

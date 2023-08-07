@@ -26,6 +26,7 @@ class OpenAIService {
         }),
       );
       print(res.body);
+      print('is art promt called');
       if (res.statusCode == 200) {
         String content =
             jsonDecode(res.body)['choices'][0]['message']['content'];
@@ -67,6 +68,7 @@ class OpenAIService {
         }),
       );
 
+      print('ChatGPT API called');
       if (res.statusCode == 200) {
         String content =
             jsonDecode(res.body)['choices'][0]['message']['content'];
@@ -101,6 +103,7 @@ class OpenAIService {
           'n': 1,
         }),
       );
+      print('Dall-E API called');
 
       if (res.statusCode == 200) {
         String imageUrl = jsonDecode(res.body)['data'][0]['url'];

@@ -34,15 +34,18 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> initTextToSpeech() async {
     flutterTts = FlutterTts();
+    print('speechToText is called');
     setState(() {});
   }
 
   Future<void> initSpeechToText() async {
     await speechToText.initialize();
+    print('speechToText is called');
     setState(() {});
   }
 
   Future<void> startListening() async {
+    print("startListening called");
     await speechToText.listen(onResult: onSpeechResult);
     setState(() {});
   }
@@ -55,6 +58,7 @@ class _HomePageState extends State<HomePage> {
   void onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
       lastWords = result.recognizedWords;
+      print("Recognized Words: $lastWords");
     });
   }
 
